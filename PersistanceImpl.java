@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -12,7 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 
-public class PersistanceImpl implements Persistance{
+public class PersistanceImpl extends UnicastRemoteObject implements Persistance {
 	/*
 	 * Requête SQL (voir BanqueJDBC)
 	 */
@@ -33,7 +34,7 @@ public class PersistanceImpl implements Persistance{
 	private PreparedStatement requeteUpdatePositionSt = null;
 	private PreparedStatement requeteUpdatePvSt = null;
 
-	public PersistanceImpl(String nomBD)  {
+	protected PersistanceImpl(String nomBD) throws RemoteException{
 		try {
 			// récupération du driver
 		    Class.forName("org.h2.Driver");
@@ -74,7 +75,7 @@ public class PersistanceImpl implements Persistance{
 	}
 	
 
-	public boolean creerJoueur(String pNom, String pMdp) {
+	public boolean creerJoueur(String pNom, String pMdp) throws RemoteException {
 		// TODO Auto-generated method stub
 		try {
 			requeteSelectNomSt.setString(1,pNom);
@@ -97,7 +98,7 @@ public class PersistanceImpl implements Persistance{
 		}
 	}
 	
-	public Joueur seConnecter(String nomJoueur, String mdp) {
+	public Joueur seConnecter(String nomJoueur, String mdp) throws RemoteException {
 		// TODO Auto-generated method stub
 		try {
 			requeteSelectNomMdpSt.setString(1, nomJoueur);
@@ -122,7 +123,7 @@ public class PersistanceImpl implements Persistance{
 		return null;
 	}
 
-	public boolean quitterPartie(Joueur j) {
+	public boolean quitterPartie(Joueur j) throws RemoteException {
 		// TODO Auto-generated method stub
 		try {
 			requeteUpdateMdpSt.setString(1, j.getMdp());
