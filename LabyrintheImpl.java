@@ -164,7 +164,7 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 		//Appel à la BD
 		if (p.creerJoueur(nomJoueur, mdp)) {
 			//Création du joueur en local
-			Joueur j = new Joueur(nomJoueur, mdp);
+			Joueur j = new Joueur(nomJoueur, mdp, "A1");
 			return j;
 		}
 		else {
