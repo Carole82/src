@@ -49,7 +49,7 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 					System.out.println("Le joueur n'existe pas! Identifiant ou mot de passe incorrect.");
 				else
 					System.out.println("Vous êtes bien connecté! :)");
-					//JOUER !!!!!!!!
+					//------------------ JOUER !!!!!!!! ------------------
 				break;
 			case 2:
 				System.out.println("Tapez le nom du joueur");
@@ -61,8 +61,8 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 				if (j==null)
 					System.out.println("Le joueur existe déjà!");
 				else
-					System.out.println(j);
-					//JOUER !!!!
+					System.out.println("Le joueur a bien été créé :)");
+					//------------------ JOUER !!!!!!!! ------------------
 				break;
 			}	
 		}

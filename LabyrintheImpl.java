@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -163,7 +164,7 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 		//Appel à la BD
 		if (p.creerJoueur(nomJoueur, mdp)) {
 			//Création du joueur en local
-			Joueur j = new Joueur(nomJoueur, mdp);
+			Joueur j = new Joueur(nomJoueur, mdp, "A1");
 			return j;
 		}
 		else {
@@ -200,7 +201,7 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 	
 	
 	public static void main(String[] args) throws Exception {
-		LocateRegistry.createRegistry(1099);
+		//LocateRegistry.createRegistry(1099);
 		 Naming.rebind("Labi", new LabyrintheImpl());
 	}
 

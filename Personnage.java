@@ -1,5 +1,7 @@
+import java.io.Serializable;
 
-public class Personnage {
+
+public class Personnage implements Serializable {
 	/*
 	 * x = ligne
 	 * y = colonne
@@ -15,11 +17,12 @@ public class Personnage {
 	private transient Piece position; 
 	private String idPosition;
 	
-	public Personnage (String pN, int pPv, int pPvMax, Piece pPosition) {
+	public Personnage (String pN, int pPv, int pPvMax, String pIdPostion) {
 		setNom(pN);
 		setPv(pPv);
 		setPvMax(pPvMax);
-		setPosition(pPosition);
+		setIdPosition(pIdPostion);
+		//setPosition(pPosition);
 	}
 
 	public String getNom() {

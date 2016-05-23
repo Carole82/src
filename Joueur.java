@@ -6,11 +6,10 @@ public class Joueur extends Personnage {
 
 	private String mdp;
 	
-	public Joueur(String pN, String pMdp) {
-		super(pN, PV_MAX_JOUEUR, PV_MAX_JOUEUR, null);
+	public Joueur(String pN, String pMdp, String pIdPosition) {
+		super(pN, PV_MAX_JOUEUR, PV_MAX_JOUEUR, pIdPosition);
 		setMdp(pMdp);
 	}
-	
 	
 	public void setMdp(String mdp) {
 		this.mdp = mdp;
