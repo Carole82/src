@@ -26,10 +26,11 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 	private static final String requeteSelect = "select * from JOUEUR";
 	private static final String requeteSelectNom = "select * from JOUEUR where nom = ?";
 	private static final String requeteSelectNomMdp = "select * from JOUEUR where nom = ? and mdp = ?";
-	private static final String requeteInsert = "insert into JOUEUR values (?, ?, ?, ?)";
+	private static final String requeteInsert = "insert into JOUEUR values (?, ?, ?, ?, ?)";
 	private static final String requeteUpdateMdp = "update JOUEUR set mdp=? where nom = ?";
 	private static final String requeteUpdatePosition = "update JOUEUR set position=? where nom = ?";
 	private static final String requeteUpdatePv = "update JOUEUR set pv=? where nom = ?";
+	private static final String requeteUpdateServeur = "update JOUEUR set serveur=? where nom = ?";
 	
 	private PreparedStatement requeteSelectSt = null;
 	private PreparedStatement requeteSelectNomSt = null;
@@ -38,6 +39,7 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 	private PreparedStatement requeteUpdateMdpSt = null;
 	private PreparedStatement requeteUpdatePositionSt = null;
 	private PreparedStatement requeteUpdatePvSt = null;
+	private PreparedStatement requeteUpdateServeurSt = null;
 
 	protected PersistanceImpl(String nomBD) throws RemoteException{
 		try {
@@ -61,13 +63,14 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 	        			" nom VARCHAR( 256 ) NOT NULL PRIMARY KEY, " +
 	        			" mdp VARCHAR( 256 ) , " +
 	        			" position VARCHAR( 2 ) , " +
-	        			" pv INTEGER )");
+	        			" pv INTEGER , " + 
+	        			" serveur INTEGER )");
 	        	System.out.println(s.toString());
 	        	
 	        	// on ajoute des entrees de test : Ajouter des joueurs
-	        	s.executeUpdate("insert into JOUEUR values ('Carole', 'azerty', 'B5', 10)");
-	        	s.executeUpdate("insert into JOUEUR values ('Mehdi', 'azerty', 'A2', 10)");
-	        	s.executeUpdate("insert into JOUEUR values ('Maeva', 'azerty', 'D4', 10)");
+	        	s.executeUpdate("insert into JOUEUR values ('Carole', 'azerty', 'B5', 10, 1)");
+	        	s.executeUpdate("insert into JOUEUR values ('Mehdi', 'azerty', 'A2', 10, 1)");
+	        	s.executeUpdate("insert into JOUEUR values ('Maeva', 'azerty', 'D4', 10, 1)");
 	        	System.out.println(s.toString());
 	        	
 	        	// on retente la construction qui devrait desormais marcher
@@ -79,6 +82,7 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 		    requeteUpdateMdpSt = conn.prepareStatement(requeteUpdateMdp);
 		    requeteUpdatePositionSt = conn.prepareStatement(requeteUpdatePosition);
 		    requeteUpdatePvSt = conn.prepareStatement(requeteUpdatePv);
+		    requeteUpdateServeurSt = conn.prepareStatement(requeteUpdateServeur);
 		} catch(Exception e) {
 			// il y a eu une erreur
 			e.printStackTrace();
@@ -99,7 +103,8 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 	        	requeteInsertSt.setString(1, pNom);
 	        	requeteInsertSt.setString(2, pMdp);
 	        	requeteInsertSt.setString(3, "A1");
-	        	requeteInsertSt.setInt(4, Personnage.PV_MAX_MONSTRE);
+	        	requeteInsertSt.setInt(4, Personnage.PV_MAX_JOUEUR);
+	        	requeteInsertSt.setInt(5, 1);
 	        	requeteInsertSt.executeUpdate();
 	        	return true;
 	        }
@@ -116,9 +121,13 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 			requeteSelectNomMdpSt.setString(2, mdp);			
 			ResultSet rs = requeteSelectNomMdpSt.executeQuery();
 			
+        	/*
+        	 * 1 = Nom / 2 = Mdp / 3 = Position / 4 = PV / 5 = Serveur
+        	 */
+			
 			if (rs.next()) 
 			{
-				Joueur j = new Joueur(rs.getString(1), rs.getString(2), rs.getString(3));
+				Joueur j = new Joueur(rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(5));
 				j.setPv(rs.getInt(4));
 				j.setPvMax(rs.getInt(4));
 				return j;
@@ -140,18 +149,25 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 			requeteUpdateMdpSt.setString(1, j.getMdp());
 			requeteUpdateMdpSt.setString(2, j.getNom());
 			
-			requeteUpdatePositionSt.setString(1, j.getPosition().getIdPiece());
+			requeteUpdatePositionSt.setString(1, j.getIdPosition());
 			requeteUpdatePositionSt.setString(2,j.getNom());
 			
-			requeteUpdatePvSt.setInt(2,Personnage.PV_MAX_MONSTRE);
+			requeteUpdatePvSt.setInt(1,Personnage.PV_MAX_JOUEUR);
 			requeteUpdatePvSt.setString(2,j.getNom());
 			
-        	if (requeteUpdateMdpSt.executeUpdate()==1 && requeteUpdatePositionSt.executeUpdate()==1 && requeteUpdatePvSt.executeUpdate()==1)
+			requeteUpdateServeurSt.setInt(1, j.getServeur());
+			requeteUpdateServeurSt.setString(2,j.getNom());
+			
+        	if (requeteUpdateMdpSt.executeUpdate()==1 && requeteUpdatePositionSt.executeUpdate()==1 && 
+        			requeteUpdatePvSt.executeUpdate()==1 && requeteUpdateServeurSt.executeUpdate() ==1)
+        		//QUITTER LA BD?
 				return true;
         	else
+        		//QUITTER LA BD?
         		return false;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			//QUITTER LA BD?
 			return false;
 		}
 		
