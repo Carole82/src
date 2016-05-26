@@ -26,6 +26,7 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 		}	
 	}
 	
+	
 	private Persistance p;
 	private int idServeur = 1;
 	
