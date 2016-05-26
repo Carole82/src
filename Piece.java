@@ -8,17 +8,17 @@ public class Piece {
 	private String idPiece;
 	private ArrayList<Joueur> lesJoueurs;
 	private Monstre leMonstre;
+	private int serveur;
+	private boolean chgtServeur;
 	
-	
-	public Piece (String pIdPiece, String pNomM) {
+	public Piece (String pIdPiece, String pNomM, int pServeur, boolean pChgtServeur) {
 		setIdPiece(pIdPiece);
-		
 		// Rentrer des pièces null
 		lien = new HashMap<String, Piece>();
-
 		lesJoueurs = new ArrayList<Joueur>();
-		setLeMonstre(new Monstre(pNomM));
-		
+		leMonstre = new Monstre(pNomM);
+		serveur = pServeur;
+		chgtServeur = pChgtServeur;
 	}
 	
 	public void setN(Piece pN)
@@ -39,6 +39,14 @@ public class Piece {
 	public void setO(Piece pO)
 	{
 		lien.put("O", pO);
+	}
+	
+	public void setLiens(Piece pN, Piece pS, Piece pE, Piece pO)
+	{
+		this.setN(pN);
+		this.setS(pS);
+		this.setE(pE);
+		this.setO(pO);
 	}
 	
 	public Piece getN() {
@@ -80,4 +88,23 @@ public class Piece {
 	public void setLesJoueurs(ArrayList<Joueur> lesJoueurs) {
 		this.lesJoueurs = lesJoueurs;
 	}
+	
+	public int getServeur() {
+		return serveur;
+	}
+	
+	public void setServeur(int serveur) {
+		this.serveur = serveur;
+	}
+	
+	public boolean getChgtServeur() {
+		return chgtServeur;
+	}
+	
+	public void setChgtServeur(boolean chgtServeur) {
+		this.chgtServeur = chgtServeur;
+	}
+	
+	
+	
 }

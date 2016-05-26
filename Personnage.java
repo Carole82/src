@@ -2,12 +2,7 @@ import java.io.Serializable;
 
 
 public class Personnage implements Serializable {
-	/*
-	 * x = ligne
-	 * y = colonne
-	 * 
-	 */
-	
+
 	public static final int PV_MAX_MONSTRE = 5;
 	public static final int PV_MAX_JOUEUR = 10;
 	

@@ -2,13 +2,14 @@ import java.rmi.RemoteException;
 
 public class Combat implements Runnable{
 	
-	private LabyrintheImpl lab;
+	//private LabyrintheImpl lab;
+	private Labyrinthe lab;
 	private Piece p;
 	private Joueur j;
 	private Personnage perso;
 	
 
-	  public Combat(LabyrintheImpl lab, Piece p, Joueur j, Personnage perso){
+	  public Combat(Labyrinthe lab, Piece p, Joueur j, Personnage perso){
 	    this.lab = lab;
 	    this.p = p;
 	    this.j = j;

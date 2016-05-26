@@ -23,11 +23,11 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 		} catch (NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
+		}	
 	}
 	
 	private Persistance p;
+	private int idServeur = 1;
 	
 	//Serveur
 	private HashMap<String, Piece> lesPieces = new HashMap<String, Piece>();
@@ -36,12 +36,48 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 	//CLient
 	private HashMap<String, LabyrintheNotification> notifications = new HashMap<String, LabyrintheNotification>();
 	
-
-
+	public void initLabyrinthe() {
+		//Création des pièces
+		lesPieces.put("A1", new Piece("A1", "Gravalanche", idServeur, false));
+		lesPieces.put("A2", new Piece("A2", "Virgo", idServeur, false));
+		lesPieces.put("A3", new Piece("A3", "Wizzel", idServeur, true));
+		lesPieces.put("B1", new Piece("B1", "Zabro", idServeur, false));
+		lesPieces.put("B2", new Piece("B2", "Stanis", idServeur, false));
+		lesPieces.put("B3", new Piece("B3", "Logos", idServeur, true));
+		lesPieces.put("C1", new Piece("C1", "Saturos", idServeur, false));
+		lesPieces.put("C2", new Piece("C2", "Vaglor", idServeur, false));
+		lesPieces.put("C3", new Piece("C3", "Aeron", idServeur, true));
+	}
+	
+	public boolean getLiensServeur (int pServeur, String pPosition) {
+		if (pPosition == "A3" || pPosition == "B3" || pPosition == "C3")
+			return true;
+		else
+			return false;
+	}
+	
+	public HashMap<String, Piece> getLesPieces() {
+		return lesPieces;
+	}
+	
+	public void creerLiens(HashMap<String, Piece> pLab)
+	{
+		//A modifier !!!! Ajouter tous les liens entre les 2 serveurs
+		lesPieces.get("A1").setLiens(null, lesPieces.get("B1"), lesPieces.get("A2"), null);
+		lesPieces.get("A2").setLiens(null, lesPieces.get("B2"), lesPieces.get("A3"), lesPieces.get("A1"));
+		lesPieces.get("A3").setLiens(null, lesPieces.get("B3"), pLab.get("A1"), lesPieces.get("A2"));
+		lesPieces.get("B1").setLiens(lesPieces.get("A1"), lesPieces.get("C1"), lesPieces.get("B2"), null);
+		lesPieces.get("B2").setLiens(lesPieces.get("A2"), lesPieces.get("C2"), lesPieces.get("B3"), lesPieces.get("B1"));
+		lesPieces.get("B3").setLiens(lesPieces.get("A3"), lesPieces.get("C3"), pLab.get("B1"), lesPieces.get("B2"));
+		lesPieces.get("C1").setLiens(lesPieces.get("B1"), null, lesPieces.get("C2"), null);
+		lesPieces.get("C2").setLiens(lesPieces.get("B2"), null, lesPieces.get("C3"), lesPieces.get("C1"));
+		lesPieces.get("C3").setLiens(lesPieces.get("B3"), null, pLab.get("C1"), lesPieces.get("C2"));
+	}
+	
 	public boolean seDeplacer(Joueur j, char direction) throws RemoteException {
 		// TODO Auto-generated method stub
 		boolean deplace = false ;
-		Piece pieceCourante = new Piece(j.getIdPosition(),j.getPosition().getLeMonstre().getNom());
+		Piece pieceCourante = new Piece(j.getIdPosition(),j.getPosition().getLeMonstre().getNom(), j.getServeur(), getLiensServeur(j.getServeur(), j.getIdPosition()));
 		
 		pieceCourante = j.getPosition();
 		int nbJoueurs = pieceCourante.getLesJoueurs().size();
@@ -145,16 +181,12 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 				j.setPv(pvP);
 			}
 		  }while(pvJ != 'O' || pvP != 'O'); //Cr�er m�thode fuir?
-		
-		
-		
 	}
 
 
 	public void envoyerMessage(Joueur emmeteur, Joueur recepteur, String message)
 			throws RemoteException {
 		// TODO Auto-generated method stub
-		
 	}
 
 
@@ -164,7 +196,7 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 		//Appel à la BD
 		if (p.creerJoueur(nomJoueur, mdp)) {
 			//Création du joueur en local
-			Joueur j = new Joueur(nomJoueur, mdp, "A1");
+			Joueur j = new Joueur(nomJoueur, mdp, "A1", 1);
 			return j;
 		}
 		else {
@@ -204,5 +236,4 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 		//LocateRegistry.createRegistry(1099);
 		 Naming.rebind("Labi", new LabyrintheImpl());
 	}
-
 }
