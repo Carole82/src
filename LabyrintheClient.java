@@ -29,12 +29,12 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 			
 			System.out.println("+---------------------------------+");
 			System.out.println("| 1 - Se connecter                |");
-			System.out.println("| 2 - Créer un joueur             |");
+			System.out.println("| 2 - Crï¿½er un joueur             |");
 			System.out.println("| 0 - Arreter                     |");
 			System.out.println("+---------------------------------+");
 			
 			choix = sc.nextInt();
-			sc.nextLine(); // saute le retour à la ligne
+			sc.nextLine(); // saute le retour ï¿½ la ligne
 			
 			switch (choix) {
 			case 0:
@@ -43,10 +43,10 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 			case 1:
 				System.out.println("Identifiant");
 				nom = sc.next();
-				sc.nextLine(); // saute le retour à la ligne
+				sc.nextLine(); // saute le retour ï¿½ la ligne
 				System.out.println("Mot de passe");
 				mdp = sc.next();
-				sc.nextLine(); // saute le retour à la ligne
+				sc.nextLine(); // saute le retour ï¿½ la ligne
 				j = souche.seConnecter(nom, mdp);
 				if (j == null)
 				{
@@ -54,9 +54,9 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 				}
 				else 
 				{
-					System.out.println("Vous êtes bien connecté! :)");
+					System.out.println("Vous ï¿½tes bien connectï¿½! :)");
 				
-					//Créer les labyrinthes sur les serveurs
+					//Crï¿½er les labyrinthes sur les serveurs
 					lab = new LabyrintheImpl();
 					lab.initLabyrinthe();
 					lab2 = new LabyrintheImpl2();
@@ -76,7 +76,7 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 					}
 					
 					System.out.println("La partie peut commencer !");
-					System.out.println("Position : " + j.getIdPosition() + " dans le labyrinthe n° " + j.getServeur());
+					System.out.println("Position : " + j.getIdPosition() + " dans le labyrinthe nï¿½ " + j.getServeur());
 					//------------------ JOUER !!!!!!!! ------------------
 					jouer(souche, j);
 				}
@@ -84,19 +84,19 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 			case 2:
 				System.out.println("Tapez le nom du joueur");
 				nom = sc.next();
-				sc.nextLine(); // saute le retour à la ligne
+				sc.nextLine(); // saute le retour ï¿½ la ligne
 				System.out.println("Tapez le mot de passe");
 				mdp = sc.next();
 				j = souche.creerJoueur(nom, mdp);
 				if (j==null)
 				{
-					System.out.println("Le joueur existe déjà!");
+					System.out.println("Le joueur existe dï¿½jï¿½!");
 				}
 				else
 				{
-					System.out.println("Le joueur a bien été créé :)");
+					System.out.println("Le joueur a bien ï¿½tï¿½ crï¿½ï¿½ :)");
 					
-					//Créer les labyrinthes sur les serveurs
+					//Crï¿½er les labyrinthes sur les serveurs
 					lab = new LabyrintheImpl();
 					lab2 = new LabyrintheImpl2();
 					lab.initLabyrinthe();
@@ -108,7 +108,7 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 					lab.getLesPieces().get("A1").getLesJoueurs().add(j);
 					
 					System.out.println("La partie peut commencer !");
-					System.out.println("Position : " + j.getIdPosition() + " dans le labyrinthe n° " + j.getServeur());
+					System.out.println("Position : " + j.getIdPosition() + " dans le labyrinthe nï¿½ " + j.getServeur());
 					//------------------ JOUER !!!!!!!! ------------------
 					jouer(souche, j);
 				}
@@ -129,19 +129,25 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 		int choix;
 		while (true) {
 			System.out.println("+---------------------------------+");
-			System.out.println("| 1 - Se déplacer                 |");
+			System.out.println("| 1 - Se dï¿½placer                 |");
 			System.out.println("| 0 - Quitter                     |");
 			System.out.println("+---------------------------------+");
 			
 			choix = sc.nextInt();
-			sc.nextLine(); // saute le retour à la ligne
+			sc.nextLine(); // saute le retour ï¿½ la ligne
 			
 			switch (choix) {
 			case 0:
 				pL.quitterPartie(pJ);
+				System.out.println("Votre partie a Ã©tÃ© sauvegardÃ©e!");
 				sc.close();
 				System.exit(0);
 			case 1:
+				System.out.print("Quelle direction voulez-vous prendre? (N pour Nord, S pour Sud, E pour Est, O pour Ouest)");
+		    	String repDirection = sc.nextLine();
+		    	char repDChar = repDirection.charAt(0);
+		    	pL.seDeplacer(pJ, repDChar);
+		    	//Attaque
 			break;
 			}		
 		}

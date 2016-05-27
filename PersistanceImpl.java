@@ -18,7 +18,7 @@ import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 public class PersistanceImpl extends UnicastRemoteObject implements Persistance {
 	/*
-	 * Requête SQL (voir BanqueJDBC)
+	 * Requï¿½te SQL (voir BanqueJDBC)
 	 */
 	
 	private Connection conn;
@@ -43,10 +43,10 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 
 	protected PersistanceImpl(String nomBD) throws RemoteException{
 		try {
-			// récupération du driver
+			// rï¿½cupï¿½ration du driver
 		    Class.forName("org.h2.Driver");
 		    
-		    // création d'une connexion
+		    // crï¿½ation d'une connexion
 		    conn = DriverManager.getConnection("jdbc:h2:"+nomBD+";IGNORECASE=TRUE", "sa", "");
 		    
 	        // On regarde si la table existe deja
@@ -57,7 +57,7 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 	        	requeteSelectNomSt = conn.prepareStatement(requeteSelectNom);
 	        } catch(Exception e) {
 	        	// sinon on l'a cree
-	        	System.out.println("Création de la table");
+	        	System.out.println("Crï¿½ation de la table");
 	        	Statement s = conn.createStatement();
 	        	s.execute("create table JOUEUR  ( " +
 	        			" nom VARCHAR( 256 ) NOT NULL PRIMARY KEY, " +
@@ -68,9 +68,9 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 	        	System.out.println(s.toString());
 	        	
 	        	// on ajoute des entrees de test : Ajouter des joueurs
-	        	s.executeUpdate("insert into JOUEUR values ('Carole', 'azerty', 'B5', 10, 1)");
+	        	s.executeUpdate("insert into JOUEUR values ('Carole', 'azerty', 'B3', 10, 1)");
 	        	s.executeUpdate("insert into JOUEUR values ('Mehdi', 'azerty', 'A2', 10, 1)");
-	        	s.executeUpdate("insert into JOUEUR values ('Maeva', 'azerty', 'D4', 10, 1)");
+	        	s.executeUpdate("insert into JOUEUR values ('Maeva', 'azerty', 'C3', 10, 1)");
 	        	System.out.println(s.toString());
 	        	
 	        	// on retente la construction qui devrait desormais marcher
@@ -97,7 +97,7 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 			ResultSet rs = requeteSelectNomSt.executeQuery();
 			
 	        if (rs.next()) {
-	        	// un joueur existe déja avec ce nom
+	        	// un joueur existe dï¿½ja avec ce nom
 	        	return false;
 	        } else {
 	        	requeteInsertSt.setString(1, pNom);
@@ -160,14 +160,11 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 			
         	if (requeteUpdateMdpSt.executeUpdate()==1 && requeteUpdatePositionSt.executeUpdate()==1 && 
         			requeteUpdatePvSt.executeUpdate()==1 && requeteUpdateServeurSt.executeUpdate() ==1)
-        		//QUITTER LA BD?
 				return true;
         	else
-        		//QUITTER LA BD?
         		return false;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			//QUITTER LA BD?
 			return false;
 		}
 		

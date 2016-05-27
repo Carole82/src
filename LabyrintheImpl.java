@@ -81,6 +81,7 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 		
 		pieceCourante = j.getPosition();
 		int nbJoueurs = pieceCourante.getLesJoueurs().size();
+		int pvM = pieceCourante.getLeMonstre().getPv();
 		
 		if (direction == 'N' && pieceCourante.getN() != null){ 
 			j.setPosition(pieceCourante.getN());
@@ -109,26 +110,31 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 			 Scanner sc = new Scanner(System.in);
 			 //Lui dire qu'il s'est déplacé, l'état de la pièce
 		    System.out.println("Vous êtes maintenant dans la pièce "+pieceCourante.getIdPiece());
-		    if(pieceCourante.getLeMonstre().getPv() != 0)
+		    if(pvM != 0)
 		    {
 		    	System.out.print("Il y a actuellement 1 monstre et ");
 		    }
-		    System.out.println(nbJoueurs+" joueur(s) dans la pièce : ");
+		    System.out.println(nbJoueurs+" joueur(s) présent(s) dans la pièce : ");
 		    for(int i = 1; i <= nbJoueurs; i++)
 		    {
 		      System.out.println( i + " - " + pieceCourante.getLesJoueurs().get(i).getNom());
 		    }
 		    System.out.println("Que souhaitez-vous faire?");
-		    System.out.println("1 - Attaquer le monstre");
+		    System.out.println("1 - Fuir"); 
 		    System.out.println("2 - Attaquer un joueur"); //Envoyer une notif pour dire qu'un joueur arrive
-		    System.out.println("3 - Fuir");
+		    if(pvM != 0)
+		    {
+		    	System.out.println("3 - Attaquer le monstre");
+		    }		    
 		    String rep = sc.nextLine();
 		    sc.close();
 		    if (rep == "1"){
-		    	LabyrintheImpl lab = new LabyrintheImpl();
-			    Thread t = new Thread(new Combat(lab, pieceCourante, j, pieceCourante.getLeMonstre()));
-			    t.start();
+		    	System.out.print("Quelle direction voulez-vous prendre? (N pour Nord, S pour Sud, E pour Est, O pour Ouest)");
+		    	String repDirection = sc.nextLine();
+		    	char repDChar = repDirection.charAt(0);
+		    	seDeplacer(j, repDChar);
 		    }
+		    /*******Pourquoi pas d'appel à la méthode attaquer() ?******/
 		    if (rep == "2"){
 		    	System.out.print("Entrez le nom du joueur que vous souhaitez attaquer : ");
 		    	String repJ = sc.nextLine();
@@ -144,11 +150,10 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 			    Thread t = new Thread(new Combat(lab, pieceCourante, j, joueurAttaque));
 			    t.start();
 		    }
-		    if (rep == "3"){
-		    	System.out.print("Quelle direction voulez-vous prendre? ");
-		    	String repDirection = sc.nextLine();
-		    	char repDChar = repDirection.charAt(0);
-		    		seDeplacer(j, repDChar);
+		    if (rep == "3" && pvM != 0){
+		    	LabyrintheImpl lab = new LabyrintheImpl();
+			    Thread t = new Thread(new Combat(lab, pieceCourante, j, pieceCourante.getLeMonstre()));
+			    t.start();
 		    	}
 		    }
 		
@@ -156,15 +161,15 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 		/*
 		 * Si le personnage rentre dans une pi�ce sans joueur, il se fait attaquer par un monstre (Classe Combat (Thread))
 		 * S'il y a un joueur et un monstre, il peut choisir d'attaquer le joueur, le monstre ou personne. Mais il ne se fait pas attaquer directement.
-		 * ==> n'appelle la m�thode attaquer() directement 
+		 * ==> n'appelle la m�thode attaquer() directement
 		 */
 	}
 
 	
 	public void attaquer(Joueur j, Personnage p) throws RemoteException {
 		// TODO Auto-generated method stub
-		int pvJ = j.getPv();
-		int pvP = p.getPv();
+		int pvJ = j.getPv(); //Point de vie du joueur
+		int pvP = p.getPv(); //Point de vie du personnage (autre joueur ou monstre)
 		
 		//Cr�ation d'un random object pour savoir lequel des 2 personnages va perdre une vie
 		 Random randomno = new Random();
@@ -174,13 +179,35 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 			boolean value = randomno.nextBoolean();
 			
 			if(value == true){
-				pvJ = pvJ--;
+				pvJ--;
 				j.setPv(pvJ);
 			}else{
-				pvP = pvP--;
+				pvP--;
 				j.setPv(pvP);
 			}
-		  }while(pvJ != 'O' || pvP != 'O'); //Cr�er m�thode fuir?
+		  }while(pvJ != 0 || pvP != 0); //Cr�er m�thode fuir?
+		
+		//Lorsque le joueur perd, il meurt et le vainqueur gagne 1 point de vie
+		if(pvJ == 0)
+		{
+			System.out.println("Oh non vous avez perdu ! ");
+			pvP++;
+		}
+		//Lorsque le joueur gagne, il gagne 1 point de vie et continue le jeu
+		else if(pvP == 0)
+		{
+			System.out.println("Bravo, vous avez gagné ! ");
+			pvJ++;
+			System.out.print("Quelle direction voulez-vous prendre? (N pour Nord, S pour Sud, E pour Est, O pour Ouest)");
+			Scanner sc = new Scanner(System.in);
+	    	String repDirection = sc.nextLine();
+	    	char repDChar = repDirection.charAt(0);
+	    	seDeplacer(j, repDChar);
+	    	sc.close();
+		}
+		
+		/*Gérer ceci : "dès qu'il n'y a plus de combat dans la pièce,
+		on considère que tous les personnages ou monstres encore en vie regagnent tous leurs points de vie."*/
 	}
 
 
