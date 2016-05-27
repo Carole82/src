@@ -68,9 +68,9 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 	        	System.out.println(s.toString());
 	        	
 	        	// on ajoute des entrees de test : Ajouter des joueurs
-	        	s.executeUpdate("insert into JOUEUR values ('Carole', 'azerty', 'B5', 10, 1)");
+	        	s.executeUpdate("insert into JOUEUR values ('Carole', 'azerty', 'B3', 10, 1)");
 	        	s.executeUpdate("insert into JOUEUR values ('Mehdi', 'azerty', 'A2', 10, 1)");
-	        	s.executeUpdate("insert into JOUEUR values ('Maeva', 'azerty', 'D4', 10, 1)");
+	        	s.executeUpdate("insert into JOUEUR values ('Maeva', 'azerty', 'C3', 10, 1)");
 	        	System.out.println(s.toString());
 	        	
 	        	// on retente la construction qui devrait desormais marcher
@@ -160,14 +160,11 @@ public class PersistanceImpl extends UnicastRemoteObject implements Persistance 
 			
         	if (requeteUpdateMdpSt.executeUpdate()==1 && requeteUpdatePositionSt.executeUpdate()==1 && 
         			requeteUpdatePvSt.executeUpdate()==1 && requeteUpdateServeurSt.executeUpdate() ==1)
-        		//QUITTER LA BD?
 				return true;
         	else
-        		//QUITTER LA BD?
         		return false;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			//QUITTER LA BD?
 			return false;
 		}
 		

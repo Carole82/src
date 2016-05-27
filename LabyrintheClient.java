@@ -139,6 +139,7 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 			switch (choix) {
 			case 0:
 				pL.quitterPartie(pJ);
+				System.out.println("Votre partie a été sauvegardée!");
 				sc.close();
 				System.exit(0);
 			case 1:
