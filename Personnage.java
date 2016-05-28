@@ -61,4 +61,16 @@ public class Personnage implements Serializable {
 		this.idPosition = idPosition;
 	}
 	
+	public void incrementerPv () {
+		pv++;
+	}
+	
+	public void decrementerPv () {
+		pv--;
+	}
+	
+	public void incrementerPvMax () {
+		pvMax++;
+	}
+	
 }

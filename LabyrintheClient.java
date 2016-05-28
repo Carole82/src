@@ -34,7 +34,7 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 			System.out.println("+---------------------------------+");
 			
 			choix = sc.nextInt();
-			sc.nextLine(); // saute le retour à la ligne
+			sc.nextLine(); // saute le retour ï¿½ la ligne
 			
 			switch (choix) {
 			case 0:
@@ -43,10 +43,10 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 			case 1:
 				System.out.println("Identifiant");
 				nom = sc.next();
-				sc.nextLine(); // saute le retour à la ligne
+				sc.nextLine(); // saute le retour ï¿½ la ligne
 				System.out.println("Mot de passe");
 				mdp = sc.next();
-				sc.nextLine(); // saute le retour à la ligne
+				sc.nextLine(); // saute le retour ï¿½ la ligne
 				j = souche.seConnecter(nom, mdp);
 				if (j == null)
 				{
@@ -54,9 +54,8 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 				}
 				else 
 				{
-					System.out.println("Vous êtes bien connecté! :)");
-				
-					//Créer les labyrinthes sur les serveurs
+					System.out.println("Vous êtes bien connectï¿½! :)");
+					//Crï¿½er les labyrinthes sur les serveurs
 					lab = new LabyrintheImpl();
 					lab.initLabyrinthe();
 					lab2 = new LabyrintheImpl2();
@@ -84,7 +83,7 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 			case 2:
 				System.out.println("Tapez le nom du joueur");
 				nom = sc.next();
-				sc.nextLine(); // saute le retour à la ligne
+				sc.nextLine(); // saute le retour ï¿½ la ligne
 				System.out.println("Tapez le mot de passe");
 				mdp = sc.next();
 				j = souche.creerJoueur(nom, mdp);
@@ -96,7 +95,7 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 				{
 					System.out.println("Le joueur a bien été créé :)");
 					
-					//Créer les labyrinthes sur les serveurs
+					//Crï¿½er les labyrinthes sur les serveurs
 					lab = new LabyrintheImpl();
 					lab2 = new LabyrintheImpl2();
 					lab.initLabyrinthe();
@@ -134,14 +133,20 @@ public class LabyrintheClient extends UnicastRemoteObject implements LabyrintheN
 			System.out.println("+---------------------------------+");
 			
 			choix = sc.nextInt();
-			sc.nextLine(); // saute le retour à la ligne
+			sc.nextLine(); // saute le retour ï¿½ la ligne
 			
 			switch (choix) {
 			case 0:
 				pL.quitterPartie(pJ);
+				System.out.println("Votre partie a été sauvegardée!");
 				sc.close();
 				System.exit(0);
 			case 1:
+				System.out.println("Quelle direction voulez-vous prendre? (N pour Nord, S pour Sud, E pour Est, O pour Ouest)");
+		    	String repDirection = sc.nextLine();
+		    	char repDChar = repDirection.charAt(0);
+		    	pJ = pL.seDeplacer(pJ, pJ.getPosition(), repDChar);
+		    	//Attaque
 			break;
 			}		
 		}

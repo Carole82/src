@@ -10,5 +10,5 @@ public interface LabyrintheNotification extends Remote {
 	 * Discussion
 	 */
 	
-	public void notification(String Message) throws RemoteException;
+	public void notification(String message) throws RemoteException;
 }

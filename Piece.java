@@ -1,8 +1,11 @@
+import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 
-public class Piece {
+public class Piece implements Serializable {
 	
 	private HashMap<String,Piece> lien;
 	private String idPiece;
@@ -10,13 +13,14 @@ public class Piece {
 	private Monstre leMonstre;
 	private int serveur;
 	private boolean chgtServeur;
+	private LabyrintheNotification notif;
 	
-	public Piece (String pIdPiece, String pNomM, int pServeur, boolean pChgtServeur) {
+	public Piece (String pIdPiece, Monstre pMonstre, int pServeur, boolean pChgtServeur) {
 		setIdPiece(pIdPiece);
 		// Rentrer des pièces null
 		lien = new HashMap<String, Piece>();
 		lesJoueurs = new ArrayList<Joueur>();
-		leMonstre = new Monstre(pNomM);
+		leMonstre = pMonstre;
 		serveur = pServeur;
 		chgtServeur = pChgtServeur;
 	}
@@ -105,6 +109,56 @@ public class Piece {
 		this.chgtServeur = chgtServeur;
 	}
 	
+	public void setNotification(LabyrintheNotification pNotif) {
+		this.notif = pNotif;
+	}
 	
-	
+	public void attaquer(Joueur j, Personnage p) {
+		//Cration d'un random object pour savoir lequel des 2 personnages va perdre une vie
+		 Random randomno = new Random();
+		      
+		do{	
+			//Obtenir alatoirement true ou false
+			boolean value = randomno.nextBoolean();
+			
+			if(value == true){
+				j.decrementerPv();
+			}
+			else {
+				p.decrementerPv();
+			}
+			System.out.println("Pv " + j.getNom() + " : " + j.getPv());
+			System.out.println("Pv " + p.getNom() + " : " + p.getPv());
+			
+		  }while(j.getPv() != 0 && p.getPv() != 0); //Crer mthode fuir?
+		
+		//Lorsque le joueur perd, il meurt et le vainqueur gagne 1 point de vie
+		if(j.getPv() == 0)
+		{
+			if (notif != null) {
+				try {
+					notif.notification("Oh non vous avez perdu !");
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			p.setPvMax(p.getPvMax()+1);
+			p.setPv(p.getPvMax());
+		}
+		//Lorsque le joueur gagne, il gagne 1 point de vie et continue le jeu
+		else if(p.getPv() == 0)
+		{
+			if (notif != null) {
+				try {
+					notif.notification("Bravo, vous avez gagné ! ");
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			j.setPvMax(j.getPvMax()+1);
+			j.setPv(j.getPvMax());
+		}
+	}
 }
