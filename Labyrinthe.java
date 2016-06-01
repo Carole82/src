@@ -6,14 +6,14 @@ import java.util.HashMap;
 public interface Labyrinthe extends Remote {
 	
 	//Action de jeux
-	public Joueur seDeplacer(Joueur j, Piece pieceCourante, char direction) throws RemoteException;
 	
 	public void envoyerMessage(Joueur emmeteur, Joueur recepteur, String message) throws RemoteException;
-	
-	public void initLabyrinthe() throws RemoteException;
-	
-	public void creerLiens(HashMap<String, Piece> pLab) throws RemoteException;
 
+	//Connexion
+	public Joueur connecterServeur (Joueur j, LabyrintheClient client, int cas) throws RemoteException;
+	
+	public void deconnecterServeur(String nomJoueur) throws RemoteException;
+	
 	//Persistance
 	public Joueur creerJoueur (String nomJoueur, String mdp) throws RemoteException;
 	
@@ -27,6 +27,4 @@ public interface Labyrinthe extends Remote {
 	//double minimum ==> Pas besoin??
 	
 	public void enleverNotification(String id) throws RemoteException;
-	
-	
 }

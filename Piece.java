@@ -13,7 +13,10 @@ public class Piece implements Serializable {
 	private Monstre leMonstre;
 	private int serveur;
 	private boolean chgtServeur;
+	private Piece lienServeur;
 	private LabyrintheNotification notif;
+	
+	public static HashMap<String, Piece> lesPieces = new HashMap<String, Piece>();
 	
 	public Piece (String pIdPiece, Monstre pMonstre, int pServeur, boolean pChgtServeur) {
 		setIdPiece(pIdPiece);
@@ -23,50 +26,36 @@ public class Piece implements Serializable {
 		leMonstre = pMonstre;
 		serveur = pServeur;
 		chgtServeur = pChgtServeur;
+		lienServeur = null;
 	}
 	
-	public void setN(Piece pN)
-	{
-		lien.put("N", pN);
-	}
-
-	public void setS(Piece pS)
-	{
-		lien.put("S", pS);
+	public boolean changementServeur (String pDir) {
+		if ((pDir == "E" && serveur == 1 && chgtServeur == true)
+				|| (pDir == "O" && serveur == 2 && chgtServeur == true))
+			return true;
+		else
+			return false;
 	}
 	
-	public void setE(Piece pE)
-	{
-		lien.put("E", pE);
-	}
-	
-	public void setO(Piece pO)
-	{
-		lien.put("O", pO);
+	public void setPiece(String pDir, Piece p) {
+		lien.put(pDir, p);
 	}
 	
 	public void setLiens(Piece pN, Piece pS, Piece pE, Piece pO)
 	{
-		this.setN(pN);
-		this.setS(pS);
-		this.setE(pE);
-		this.setO(pO);
+		this.setPiece("N", pN);
+		this.setPiece("S", pS);
+		this.setPiece("E", pE);
+		this.setPiece("O", pO);
+	}
+
+	
+	public Piece getPiece(String pDir) {
+		return lien.get(pDir);
 	}
 	
-	public Piece getN() {
-		return lien.get("N");
-	}
-	
-	public Piece getS() {
-		return lien.get("S");
-	}
-	
-	public Piece getO() {
-		return lien.get("O");
-	}
-	
-	public Piece getE() {
-		return lien.get("E");
+	public HashMap<String, Piece> getLien() {
+		return lien;
 	}
 	
 	public String getIdPiece() {
@@ -113,52 +102,7 @@ public class Piece implements Serializable {
 		this.notif = pNotif;
 	}
 	
-	public void attaquer(Joueur j, Personnage p) {
-		//Cration d'un random object pour savoir lequel des 2 personnages va perdre une vie
-		 Random randomno = new Random();
-		      
-		do{	
-			//Obtenir alatoirement true ou false
-			boolean value = randomno.nextBoolean();
-			
-			if(value == true){
-				j.decrementerPv();
-			}
-			else {
-				p.decrementerPv();
-			}
-			System.out.println("Pv " + j.getNom() + " : " + j.getPv());
-			System.out.println("Pv " + p.getNom() + " : " + p.getPv());
-			
-		  }while(j.getPv() != 0 && p.getPv() != 0); //Crer mthode fuir?
-		
-		//Lorsque le joueur perd, il meurt et le vainqueur gagne 1 point de vie
-		if(j.getPv() == 0)
-		{
-			if (notif != null) {
-				try {
-					notif.notification("Oh non vous avez perdu !");
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			p.setPvMax(p.getPvMax()+1);
-			p.setPv(p.getPvMax());
-		}
-		//Lorsque le joueur gagne, il gagne 1 point de vie et continue le jeu
-		else if(p.getPv() == 0)
-		{
-			if (notif != null) {
-				try {
-					notif.notification("Bravo, vous avez gagné ! ");
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			j.setPvMax(j.getPvMax()+1);
-			j.setPv(j.getPvMax());
-		}
+	public void setLienServeur(Piece lienServeur) {
+		this.lienServeur = lienServeur;
 	}
 }
