@@ -11,7 +11,6 @@ public class LabyrintheNotificationImpl extends UnicastRemoteObject implements L
 		this.id = id;
 	}
 
-	@Override
 	public void notification(String message) throws RemoteException {
 		// TODO Auto-generated method stub
 		System.out.println(message);

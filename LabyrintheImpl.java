@@ -12,9 +12,10 @@ import java.util.Scanner;
 
 public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 
-	protected LabyrintheImpl() throws RemoteException {
+	protected LabyrintheImpl(int serveur) throws RemoteException {
 		super();
 		// TODO Auto-generated constructor stub
+		idServeur = serveur;
 		try {
 			p = (Persistance) Naming.lookup("rmi://localhost:1099/Pers");
 		} catch (MalformedURLException e) {
@@ -27,153 +28,96 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 	}
 	
 	private Persistance p;
-	private int idServeur = 1;
+	private int idServeur;
+	private HashMap<String, LabyrintheClient> lesClients = new HashMap<String, LabyrintheClient>(); 
 	
 	//Serveur
-	private HashMap<String, Piece> lesPieces = new HashMap<String, Piece>();
-	//private HashMap<String, Personnage> lesPersonnages = new HashMap<String, Personnage>();
+	private static HashMap<String, Joueur> lesJoueurs = new HashMap<String, Joueur>();
 	
 	//CLient
 	private HashMap<String, LabyrintheNotification> notifications = new HashMap<String, LabyrintheNotification>();
-	
-	public void initLabyrinthe() {
-		//Création des pièces
-		lesPieces.put("A1", new Piece("A1", new Monstre("Gravalanche"), idServeur, false));
-		lesPieces.put("A2", new Piece("A2", new Monstre("Virgo"), idServeur, false));
-		lesPieces.put("A3", new Piece("A3", new Monstre("Wizzel"), idServeur, true));
-		lesPieces.put("B1", new Piece("B1", new Monstre("Zabro"), idServeur, false));
-		lesPieces.put("B2", new Piece("B2", new Monstre("Stanis"), idServeur, false));
-		lesPieces.put("B3", new Piece("B3", new Monstre("Logos"), idServeur, true));
-		lesPieces.put("C1", new Piece("C1", new Monstre("Saturos"), idServeur, false));
-		lesPieces.put("C2", new Piece("C2", new Monstre("Vaglor"), idServeur, false));
-		lesPieces.put("C3", new Piece("C3", new Monstre("Aeron"), idServeur, true));
-	}
-	
-	public HashMap<String, Piece> getLesPieces() {
-		return lesPieces;
-	}
-	
-	public void creerLiens(HashMap<String, Piece> pLab)
-	{
-		//A modifier !!!! Ajouter tous les liens entre les 2 serveurs
-		lesPieces.get("A1").setLiens(null, lesPieces.get("B1"), lesPieces.get("A2"), null);
-		lesPieces.get("A2").setLiens(null, lesPieces.get("B2"), lesPieces.get("A3"), lesPieces.get("A1"));
-		lesPieces.get("A3").setLiens(null, lesPieces.get("B3"), pLab.get("A1"), lesPieces.get("A2"));
-		lesPieces.get("B1").setLiens(lesPieces.get("A1"), lesPieces.get("C1"), lesPieces.get("B2"), null);
-		lesPieces.get("B2").setLiens(lesPieces.get("A2"), lesPieces.get("C2"), lesPieces.get("B3"), lesPieces.get("B1"));
-		lesPieces.get("B3").setLiens(lesPieces.get("A3"), lesPieces.get("C3"), pLab.get("B1"), lesPieces.get("B2"));
-		lesPieces.get("C1").setLiens(lesPieces.get("B1"), null, lesPieces.get("C2"), null);
-		lesPieces.get("C2").setLiens(lesPieces.get("B2"), null, lesPieces.get("C3"), lesPieces.get("C1"));
-		lesPieces.get("C3").setLiens(lesPieces.get("B3"), null, pLab.get("C1"), lesPieces.get("C2"));
-	}
-	
-	public Joueur seDeplacer(Joueur j, Piece pieceCourante, char direction) throws RemoteException {
-		// TODO Auto-generated method stub
-		boolean deplace = false ;
-
-		int nbJoueurs;
-		System.out.println(pieceCourante.toString());
-		int pvM = pieceCourante.getLeMonstre().getPv();
-		
-		if (direction == 'N' && pieceCourante.getN() != null){ 
-			j.setPosition(pieceCourante.getN());
-			deplace = true;
-		}
-		else if (direction == 'S' && pieceCourante.getS() != null){ 
-			j.setPosition(pieceCourante.getS());
-			deplace = true;
-		}
-		else if (direction == 'E' && pieceCourante.getE() != null){ 
-			j.setPosition(pieceCourante.getE());
-			deplace = true;
-		}
-		else if (direction == 'O' && pieceCourante.getO() != null){ 
-			j.setPosition(pieceCourante.getO());
-			deplace = true;
-		}
-		
-		if (deplace == true) 
-		{
-			pieceCourante = j.getPosition();
-			pieceCourante.getLesJoueurs().add(j);
-			nbJoueurs = j.getPosition().getLesJoueurs().size();
-			
-			System.out.println("Vous êtes maintenant dans la pièce " + pieceCourante.getIdPiece());
-			
-			if (nbJoueurs == 1){ //Seul dans la pièce
-				
-				System.out.println("Attention ! Il y a un monstre ! ");
-			    Thread t = new Thread(new Combat(pieceCourante, j, pieceCourante.getLeMonstre()));
-			    t.start();
-			}
-			else if (nbJoueurs != 1)
-			{
-				Scanner sc = new Scanner(System.in);
-				//Lui dire qu'il s'est déplacé, l'état de la pièce
-			    if(pvM != 0)
-			    {
-			    	System.out.print("Il y a actuellement 1 monstre et ");
-			    }
-			    System.out.println(nbJoueurs+" joueur(s) présent(s) dans la pièce : ");
-			    
-			    for(int i = 1; i <= nbJoueurs; i++)
-			    {
-			      System.out.println( i + " - " + pieceCourante.getLesJoueurs().get(i).getNom());
-			    }
-			    
-			    System.out.println("Que souhaitez-vous faire?");
-			    System.out.println("1 - Fuir"); 
-			    System.out.println("2 - Attaquer un joueur"); //Envoyer une notif pour dire qu'un joueur arrive
-			    if(pvM != 0)
-			    {
-			    	System.out.println("3 - Attaquer le monstre");
-			    }		    
-			    String rep = sc.nextLine();
-			    sc.close();
-			    if (rep == "1")
-			    {
-			    	System.out.print("Quelle direction voulez-vous prendre? (N pour Nord, S pour Sud, E pour Est, O pour Ouest)");
-			    	String repDirection = sc.nextLine();
-			    	char repDChar = repDirection.charAt(0);
-			    	//seDeplacer(j, repDChar);
-			    }
-			    if (rep == "2")
-			    {
-			    	System.out.print("Entrez le nom du joueur que vous souhaitez attaquer : ");
-			    	String repJ = sc.nextLine();
-			    	//On récupère le joueur qui à ce nom "repJ"
-			    	Joueur joueurAttaque = null;
-			    	
-			    	int i = 1;
-			    	while (i<= nbJoueurs && joueurAttaque == null)
-			    	{
-			    		if(pieceCourante.getLesJoueurs().get(i).getNom() == repJ){
-					    	  joueurAttaque = pieceCourante.getLesJoueurs().get(i);
-					    }
-			    		i++;
-			    	}
-			    	
-				    Thread t = new Thread(new Combat(pieceCourante, j, joueurAttaque));
-				    t.start();
-			    }
-			    if (rep == "3" && pvM != 0)
-			    {
-				    Thread t = new Thread(new Combat(pieceCourante, j, pieceCourante.getLeMonstre()));
-				    t.start();
-			    }
-		    }
-		}
-		return j;
-	}
 
 	public void envoyerMessage(Joueur emmeteur, Joueur recepteur, String message)
 			throws RemoteException {
 		// TODO Auto-generated method stub
 	}
 
-
-	public Joueur creerJoueur(String nomJoueur, String mdp)
-			throws RemoteException {
+	public Joueur connecterServeur(Joueur j, LabyrintheClient client, int cas) throws RemoteException {
+		// TODO Auto-generated method stub
+		//1 = connexion ; 2 = déplacement (changement de serveur) ; 3 = défaite
+		Labyrinthe l = null;
+		switch (cas) {
+			case 1: 
+				if (j.getServeur() == 2) {
+					lesClients.remove(j.getNom());
+					try {
+						l = (Labyrinthe) Naming.lookup("rmi://localhost:1099/Labi2");
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NotBoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					lesClients.put(j.getNom(), client);
+				}
+				break;
+			case 2 :
+				lesClients.remove(j.getNom());
+				if (j.getServeur() == 1) {
+					try {
+						l = (Labyrinthe) Naming.lookup("rmi://localhost:1099/Labi2");
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NotBoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					j.setPosition(Piece.lesPieces.get("A4"));
+				}
+				else {
+					try {
+						l = (Labyrinthe) Naming.lookup("rmi://localhost:1099/Labi1");
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NotBoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					j.setPosition(Piece.lesPieces.get("C3"));
+				}
+				lesClients.put(j.getNom(), client);
+				j.getPosition().getLesJoueurs().add(j);
+				break;
+			case 3 :
+				if (j.getServeur() == 2) {
+					lesClients.remove(j.getNom());
+					try {
+						l = (Labyrinthe) Naming.lookup("rmi://localhost:1099/Labi1");
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NotBoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					lesClients.put(j.getNom(), client);
+					j.setPosition(Piece.lesPieces.get("A1"));
+					j.getPosition().getLesJoueurs().add(j);
+				}
+				break;	
+		}
+		return j;
+	}
+	
+	public void deconnecterServeur(String nomJoueur) throws RemoteException {
+		// TODO Auto-generated method stub
+		lesClients.remove(nomJoueur);
+	}
+	
+	public Joueur creerJoueur(String nomJoueur, String mdp) throws RemoteException {
 		// TODO Auto-generated method stub
 		//Appel à la BD
 		if (p.creerJoueur(nomJoueur, mdp)) {
@@ -186,23 +130,22 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 		}
 	}
 
-
-	public Joueur seConnecter(String nomJoueur, String mdp)
-			throws RemoteException {
+	public Joueur seConnecter(String nomJoueur, String mdp) throws RemoteException {
 		// TODO Auto-generated method stub
-		return p.seConnecter(nomJoueur, mdp);
+		Joueur j = p.seConnecter(nomJoueur, mdp);
+		lesJoueurs.put(nomJoueur, j);
+		//j.getPosition().getLesJoueurs().add(j);
+		return j;
 	}
-
 
 	public boolean quitterPartie(Joueur j) throws RemoteException {
 		// TODO Auto-generated method stub
 		return p.quitterPartie(j);
 	}
 	
-	
 	public synchronized void enregistrerNotification(String id, LabyrintheNotification l, double minimum) throws RemoteException {
 		// TODO Auto-generated method stub
-		Piece p = lesPieces.get(id);
+		Piece p = Piece.lesPieces.get(id);
 		p.setNotification(l);
 		//notifications.put(id, b);
 		
@@ -212,14 +155,11 @@ public class LabyrintheImpl extends UnicastRemoteObject implements Labyrinthe {
 	public synchronized void enleverNotification(String id) throws RemoteException {
 		// TODO Auto-generated method stub
 		//notifications.remove(id);
-		Piece p = lesPieces.get(id);
+		Piece p = Piece.lesPieces.get(id);
 		p.setNotification(null);
 	}
 	
-	
-	public static void main(String[] args) throws Exception {
-		//LocateRegistry.createRegistry(1099);
-		 Naming.rebind("Labi", new LabyrintheImpl());
+	public HashMap<String, LabyrintheClient> getLesClients() {
+		return lesClients;
 	}
-
 }

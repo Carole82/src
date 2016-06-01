@@ -9,7 +9,8 @@ public class Personnage implements Serializable {
 	private String nom;
 	private int pv;
 	private int pvMax; 
-	private transient Piece position; 
+	//transient
+	private Piece position; 
 	private String idPosition;
 	
 	public Personnage (String pN, int pPv, int pPvMax, String pIdPostion) {
@@ -72,5 +73,4 @@ public class Personnage implements Serializable {
 	public void incrementerPvMax () {
 		pvMax++;
 	}
-	
 }
